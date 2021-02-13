@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<button type="button" id="connect">连接服务端</button>
+		<button type="button" disabled="true" id="send">发送数据</button>
+		从服务端接收到的数据如下：<br />
+		<span id="recv"></span>
+		<script type="text/javascript">
+			var connect = document.querySelector('#connect')
+			var send = document.querySelector('#send')
+			var recv = document.querySelector('#recv')
+			let ws = null
+			connect.onclick = function(){
+				ws = new WebSocket('ws://localhost:9998')
+				ws.onopen = () => {
+					console.log('连接服务端成功了')
+					send.disabled = false
+				}
+				ws.onclose = () => {
+					console.log('连接服务端失败了')
+					send.disabled = true
+				}
+				ws.onmessage = (msg) => {
+					console.log('接收到从服务端发送来的数据了: ' + msg)
+					recv.innerHTML = msg.data
+				}
+			}
+			send.onclick = function(){
+				ws.send(JSON.stringify({
+					action: 'fullScreen',
+					socketType: 'trendData',
+					chartName: '',
+					value: 'true'
+				}))
+			}
+		</script>
+	</body>
+</html>
